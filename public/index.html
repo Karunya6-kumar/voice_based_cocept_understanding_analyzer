@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice based concept understanding analyser</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-title">Voice based concept understanding analyser</div>
+      <ul class="nav-links">
+        <li><a href="#home" class="nav-link active" onclick="showSection('home')">Home</a></li>
+        <li><a href="#analyze" class="nav-link" onclick="showSection('analyze')">Analyze Concept</a></li>
+        <li><a href="#how" class="nav-link" onclick="showSection('how')">How It Works</a></li>
+        <li><a href="#about" class="nav-link" onclick="showSection('about')">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ===== HOME SECTION ===== -->
+  <section id="home" class="section">
+    <div class="container">
+      <h1>Voice based concept understanding analyser</h1>
+      <p class="subtitle">Check your understanding. Find your gaps. Learn better.</p>
+      <p class="description">
+        This tool helps students identify what they understand and what they need to improve.
+        Speak or type your explanation of a concept, and the system will analyze your
+        understanding, find missing concepts, and give you feedback to learn better.
+      </p>
+      <button class="btn btn-primary" onclick="showSection('analyze')">Start Analysis</button>
+    </div>
+  </section>
+
+  <!-- ===== ANALYZE CONCEPT SECTION ===== -->
+  <section id="analyze" class="section" style="display:none;">
+    <div class="container">
+      <h2>Analyze Concept</h2>
+      <p class="section-desc">Enter a concept and explain it in your own words. You can type or use voice input.</p>
+
+      <!-- Analysis Form -->
+      <div class="card">
+        <form id="analyzeForm" onsubmit="return false;">
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" placeholder="Enter subject (e.g. Programming, DBMS)" />
+          </div>
+
+          <div class="form-group">
+            <label for="concept">Concept</label>
+            <input type="text" id="concept" placeholder="Enter concept (e.g. Arrays, Loops, OOP)" list="conceptList" />
+            <datalist id="conceptList">
+              <option value="Variables"></option>
+              <option value="Arrays"></option>
+              <option value="Loops"></option>
+              <option value="Functions"></option>
+              <option value="OOP"></option>
+              <option value="SQL"></option>
+              <option value="DBMS"></option>
+              <option value="Machine Learning"></option>
+              <option value="Artificial Intelligence"></option>
+              <option value="Data Structures"></option>
+              <option value="Computer Networks"></option>
+              <option value="Operating Systems"></option>
+            </datalist>
+          </div>
+
+          <div class="form-group">
+            <label for="explanation">Explain the concept in your own words</label>
+            <textarea id="explanation" rows="6" placeholder="Explain the concept as if you are teaching it to a friend."></textarea>
+          </div>
+
+          <!-- Voice input buttons -->
+          <div class="voice-controls">
+            <button type="button" class="btn btn-secondary" id="voiceBtn" onclick="startVoiceInput()">
+              Start Voice Input
+            </button>
+            <span id="voiceStatus" class="voice-status"></span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" onclick="analyzeUnderstanding()">Analyze My Understanding</button>
+          </div>
+
+          <div id="errorMsg" class="error-msg" style="display:none;"></div>
+        </form>
+      </div>
+
+      <!-- Analysis Result -->
+      <div id="resultArea" style="display:none;">
+        <div class="card">
+          <h3>Analysis Result</h3>
+
+          <div class="result-row">
+            <span class="result-label">Understanding Score:</span>
+            <span id="resultScore" class="result-score"></span>
+            <span class="result-max">/100</span>
+          </div>
+
+          <div class="result-row">
+            <span class="result-label">Understanding Level:</span>
+            <span id="resultLevel" class="result-level"></span>
+          </div>
+
+          <div class="result-block">
+            <h4>What You Understood</h4>
+            <p id="resultUnderstood"></p>
+          </div>
+
+          <div class="result-block">
+            <h4>Missing Concepts</h4>
+            <p id="resultMissing"></p>
+          </div>
+
+          <div class="result-block">
+            <h4>Areas to Improve</h4>
+            <p id="resultImprove"></p>
+          </div>
+
+          <div class="result-block">
+            <h4>Simple Explanation</h4>
+            <p id="resultExplanation"></p>
+          </div>
+
+          <div class="result-block">
+            <h4>Important Points</h4>
+            <ul id="resultPoints"></ul>
+          </div>
+
+          <div class="result-block">
+            <h4>Real-Life Example</h4>
+            <p id="resultRealLife"></p>
+          </div>
+
+          <div class="result-block">
+            <h4>Practice Questions</h4>
+            <ul id="resultPractice"></ul>
+          </div>
+
+          <div class="result-block">
+            <h4>Learning Suggestions</h4>
+            <ul id="resultSuggestions"></ul>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" onclick="showTeachMode()">Teach Me This Concept</button>
+            <button class="btn btn-secondary" onclick="showPractice()">Practice Questions</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teach Me Mode -->
+      <div id="teachArea" style="display:none;">
+        <div class="card">
+          <h3>Teach Me: <span id="teachConceptName"></span></h3>
+          <div id="teachContent"></div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="showSection('analyze')">Back to Analysis</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Practice Mode -->
+      <div id="practiceArea" style="display:none;">
+        <div class="card">
+          <h3>Practice: <span id="practiceConceptName"></span></h3>
+          <div id="practiceQuestions"></div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="checkPracticeAnswers()">Check Answers</button>
+          </div>
+          <div id="practiceFeedback" style="display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS SECTION ===== -->
+  <section id="how" class="section" style="display:none;">
+    <div class="container">
+      <h2>How It Works</h2>
+      <p class="section-desc">The analyzer works in 4 simple steps:</p>
+
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h4>Select a Concept</h4>
+          <p>Choose a concept you want to test yourself on, like Arrays, Loops, or OOP.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h4>Explain It In Your Own Words</h4>
+          <p>Speak or type your explanation as if you are teaching it to a friend.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h4>Analyze Your Understanding</h4>
+          <p>The system checks your explanation against a knowledge base and calculates a score.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h4>Learn and Practice</h4>
+          <p>Read the feedback, learn from the explanations, and practice with questions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT SECTION ===== -->
+  <section id="about" class="section" style="display:none;">
+    <div class="container">
+      <h2>About</h2>
+      <p class="section-desc">
+        This is a student-focused learning tool designed to identify knowledge gaps
+        and improve concept understanding. It helps students test their own knowledge
+        and get feedback on what they know and what they need to learn.
+      </p>
+
+      <div class="card">
+        <h3>Objectives</h3>
+        <ul class="objectives">
+          <li>Improve concept understanding</li>
+          <li>Identify knowledge gaps</li>
+          <li>Provide simple explanations</li>
+          <li>Encourage active learning</li>
+          <li>Help students test themselves</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Technologies Used</h3>
+        <ul class="objectives">
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>JavaScript</li>
+          <li>Node.js</li>
+          <li>Express.js</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>Concept Understanding Analyzer</p>
+    <p>Student Project</p>
+    <p>&copy; 2026</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

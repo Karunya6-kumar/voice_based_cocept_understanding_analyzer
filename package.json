@@ -1,0 +1,12 @@
+{
+  "name": "concept-understanding-analyzer",
+  "version": "1.0.0",
+  "description": "Voice based concept understanding analyser - B.Tech student project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
